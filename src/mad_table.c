@@ -1,5 +1,5 @@
 #include "madx.h"
-
+#include <stdio.h>
 #ifndef _WIN32
 #include <sys/utsname.h> // for uname
 #endif
@@ -702,6 +702,8 @@ table_value(void)
   double val = zero;
   int ntok, col, row;
   char** toks;
+  char *tmp_row_name;
+  unsigned l_tmp_row_name;
   struct table* table;
   char temp[NAME_L];
 
@@ -720,17 +722,16 @@ table_value(void)
          {
           if (ntok > 2)
            { /* find row - else current (dynamic), or 0 */
-            /* start mod - HG 26.3.2011 */
-            if (ntok > 5)
+            if (ntok > 5 && *toks[2] == '[' && *toks[4] == ']')
              { /* check for [ count ] and convert to ->count */
-               if (*toks[2] == '[' && *toks[4] == ']')
-                {
-                   strcat(toks[1], "->");
-                   strcat(toks[1], toks[3]);
-                 }
+               l_tmp_row_name = strlen(toks[1])+strlen(toks[3])+3;
+               tmp_row_name = malloc(l_tmp_row_name);
+               snprintf(tmp_row_name,l_tmp_row_name,"%s->%s",toks[1],toks[3]);
+               row = table_row(table, tmp_row_name);
+               free(tmp_row_name);
              }
-            /* end mod - HG 26.3.2011 */
-            row = table_row(table, toks[1]);
+            else
+             row = table_row(table, toks[1]);
            }
           else
            {
