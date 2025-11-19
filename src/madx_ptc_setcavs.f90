@@ -77,6 +77,7 @@ contains
     call locate_all_twcav(my_ring,poscav)
     if ( getdebug() > 2 ) write(6,*) "There are ", size(poscav), " Cavities in the line."
     if ( size(poscav) == 0) then
+       deallocate(poscav)
        if (getdebug() > 1) then
           close(mf1);close(mf2);
        endif
